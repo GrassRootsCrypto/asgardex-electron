@@ -11,8 +11,8 @@ import { ETH_DECIMAL } from '@xchainjs/xchain-ethereum'
 import { ETHChain } from '@xchainjs/xchain-ethereum'
 import { LTC_DECIMAL } from '@xchainjs/xchain-litecoin'
 import { LTCChain } from '@xchainjs/xchain-litecoin'
-import { RUNE_DECIMAL as THOR_DECIMAL } from '@xchainjs/xchain-thorchain'
-import { THORChain } from '@xchainjs/xchain-thorchain'
+import { MAYAChain, MAYA_DECIMAL } from '@xchainjs/xchain-mayachain'
+import { THORChain, RUNE_DECIMAL } from '@xchainjs/xchain-thorchain'
 import { BaseAmount, baseAmount } from '@xchainjs/xchain-util'
 import { Chain } from '@xchainjs/xchain-util'
 
@@ -33,8 +33,11 @@ export const smallestAmountToSent = (chain: Chain, _network: Network): BaseAmoun
       // 1000 satoshi
       return baseAmount(1000, BTC_DECIMAL)
     case THORChain:
-      // 0 thor
-      return baseAmount(0, THOR_DECIMAL)
+      return baseAmount(0, RUNE_DECIMAL)
+    // 0 thor
+    case MAYAChain:
+      return baseAmount(0, MAYA_DECIMAL)
+    //
     case ETHChain:
       // zero for ETH
       return baseAmount(0, ETH_DECIMAL)
@@ -49,5 +52,7 @@ export const smallestAmountToSent = (chain: Chain, _network: Network): BaseAmoun
     case LTCChain:
       // 1000 satoshi
       return baseAmount(1000, LTC_DECIMAL)
+    default:
+      throw Error(`${chain} is not supported for 'smallestAmountToSent$'`)
   }
 }
