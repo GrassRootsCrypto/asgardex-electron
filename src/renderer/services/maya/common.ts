@@ -7,7 +7,7 @@ import * as Rx from 'rxjs'
 import * as RxOp from 'rxjs/operators'
 
 import { getChainId } from '../../../shared/api/maya'
-import { getClientUrls, INITIAL_CHAIN_IDS } from '../../../shared/maya/client'
+import { DEFAULT_CLIENT_URL } from '../../../shared/maya/client'
 import { isError } from '../../../shared/utils/guard'
 import { clientNetwork$ } from '../app/service'
 import * as C from '../clients'
@@ -15,30 +15,19 @@ import { keystoreService } from '../wallet/keystore'
 import { getPhrase } from '../wallet/util'
 import type { Client$, ClientState, ClientState$ } from './types'
 
-/**
- * Stream to create an observable `CosmosClient` depending on existing phrase in keystore
- *
- * Whenever a phrase has been added to keystore, a new `CosmosClient` will be created.
- * By the other hand: Whenever a phrase has been removed, `ClientState` is set to `initial`
- * A `CosmosClient` will never be created as long as no phrase is available
- */
-
-// const rpcURL = 'https://api.cosmos.network'
 const clientState$: ClientState$ = FP.pipe(
-  Rx.combineLatest([keystoreService.keystoreState$, clientNetwork$, Rx.of(getClientUrls())]),
+  Rx.combineLatest([keystoreService.keystoreState$, clientNetwork$]),
   RxOp.switchMap(
-    ([keystore, network, clientUrls]): ClientState$ =>
+    ([keystore, network]): ClientState$ =>
       FP.pipe(
-        // request chain id whenever network or keystore have been changed
-        Rx.from(getChainId(clientUrls[network])()),
-        // Rx.from(getChainId(rpcURL)()),
+        Rx.from(getChainId(DEFAULT_CLIENT_URL[network].node)()),
         RxOp.switchMap((eChainId) =>
           FP.pipe(
             eChainId,
             E.fold(
               (error) =>
                 Rx.of(RD.failure(Error(`Failed to get Maya chain id (${error?.message ?? error.toString()})`))),
-              (chainId) =>
+              () =>
                 Rx.of(
                   FP.pipe(
                     getPhrase(keystore),
@@ -46,16 +35,10 @@ const clientState$: ClientState$ = FP.pipe(
                       try {
                         const settings = {
                           phrase: phrase,
-                          network: network,
-                          chainIds: { ...INITIAL_CHAIN_IDS, [network]: chainId }
+                          network: network
                         }
 
-                        const client = new Client(
-                          settings
-
-                          // clientUrls: getClientUrls(),
-                          // clientUrls: { ...getClientUrls(), [network]: rpcURL },
-                        )
+                        const client = new Client(settings)
                         return RD.success(client)
                       } catch (error) {
                         return RD.failure<Error>(isError(error) ? error : new Error('Failed to create Maya client'))

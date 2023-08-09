@@ -11,15 +11,15 @@ import { DOGEChain } from '@xchainjs/xchain-doge'
 import { ETHChain } from '@xchainjs/xchain-ethereum'
 import { LTC_DECIMAL } from '@xchainjs/xchain-litecoin'
 import { LTCChain } from '@xchainjs/xchain-litecoin'
-import { MAYAChain } from '@xchainjs/xchain-mayachain'
-import { THORChain } from '@xchainjs/xchain-thorchain'
+import { MAYAChain, MAYA_DECIMAL } from '@xchainjs/xchain-mayachain'
+import { THORChain, RUNE_DECIMAL } from '@xchainjs/xchain-thorchain'
 import { Asset } from '@xchainjs/xchain-util'
 import * as Rx from 'rxjs'
 import * as RxOp from 'rxjs/operators'
 
 import { Network } from '../../../shared/api/types'
 import { isEnabledChain } from '../../../shared/utils/chain'
-import { BNB_DECIMAL, THORCHAIN_DECIMAL } from '../../helpers/assetHelper'
+import { BNB_DECIMAL } from '../../helpers/assetHelper'
 import { getERC20Decimal } from '../ethereum/common'
 import { AssetWithDecimalLD } from './types'
 
@@ -35,8 +35,9 @@ const getDecimal = (asset: Asset, network: Network): Promise<number> => {
     case ETHChain:
       return getERC20Decimal(asset, network)
     case THORChain:
+      return Promise.resolve(RUNE_DECIMAL)
     case MAYAChain:
-      return Promise.resolve(THORCHAIN_DECIMAL)
+      return Promise.resolve(MAYA_DECIMAL)
     case DOGEChain:
       return Promise.resolve(DOGE_DECIMAL)
     case GAIAChain:

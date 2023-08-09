@@ -36,7 +36,6 @@ const balances$ = ({
     walletIndex,
     hdMode,
     walletBalanceType: 'all',
-    // ATOM only - no IBC assets etc.
     assets: [AssetCacao]
   })
 
@@ -45,7 +44,6 @@ const getBalanceByAddress$ = C.balancesByAddress$({
   client$,
   trigger$: reloadBalances$,
   walletBalanceType: 'all',
-  // ATOM only - no IBC assets etc.
   assets: [AssetCacao]
 })
 

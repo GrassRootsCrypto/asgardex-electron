@@ -1,8 +1,10 @@
 import { Network } from '@xchainjs/xchain-client'
-import { ChainIds, ClientUrl } from '@xchainjs/xchain-mayachain'
+import { ChainIds, NodeUrl } from '@xchainjs/xchain-mayachain'
 
 import { ApiUrls } from '../api/types'
 import { envOrDefault } from '../utils/env'
+
+export type ClientUrls = Record<Network, NodeUrl>
 
 // expose env (needed to access ENVs by `envOrDefault`) in `main` thread)
 require('dotenv').config()
@@ -25,7 +27,7 @@ export const INITIAL_CHAIN_IDS: ChainIds = {
   [Network.Testnet]: 'deprecated'
 }
 
-export const DEFAULT_CLIENT_URL: ClientUrl = {
+export const DEFAULT_CLIENT_URL: ClientUrls = {
   [Network.Testnet]: {
     node: DEFAULT_MAYA_API_URLS.testnet,
     rpc: DEFAULT_MAYA_RPC_URLS.testnet
